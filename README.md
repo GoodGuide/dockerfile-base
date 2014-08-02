@@ -1,5 +1,7 @@
-This is a common base for projects at GoodGuide.
+# goodguide/base
 
-It performs some helpful configuration for Apt, for running with no available UI, as happens when installing packages via Dockerfile.
+This is a Dockerfile to build a base-image with a minimum set of libraries/tools to avoid common annoyances when debugging inside containers, as well as providing baseline functionality assumed needed for any container we'll use at GoodGuide, such as `curl` and `git`.
 
-It also installs some dev libraries, vim, and some other tools that are generally useful.
+It also performs some helpful configuration for `apt`, for running with no available UI, as happens when installing packages via Dockerfile.
+
+This is tied to the [goodguide/base](//registry.hub.docker.com/u/goodguide/base) automated build on the Docker Hub.
