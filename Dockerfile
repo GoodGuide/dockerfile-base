@@ -6,8 +6,13 @@ MAINTAINER GoodGuide "docker@goodguide.com"
 # Tell Apt never to prompt
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN locale-gen en_US en_US.UTF-8 \
+RUN set -x \
+
+ # Set up UTF support
+ && locale-gen en_US en_US.UTF-8 \
  && dpkg-reconfigure locales \
+ && update-locale LANG=en_US.UTF-8 \
+
  # Set apt mirror
  && sed 's:archive.ubuntu.com/ubuntu/:mirrors.rit.edu/ubuntu-archive/:' -i /etc/apt/sources.list \
 
@@ -33,5 +38,4 @@ RUN locale-gen en_US en_US.UTF-8 \
        git \
        iputils-ping \
        software-properties-common \
-       vim \
- && apt-get clean
+       vim
