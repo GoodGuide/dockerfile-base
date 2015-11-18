@@ -1,32 +1,37 @@
-FROM ubuntu:14.04
+# vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2:
+FROM ubuntu:15.10
 
 MAINTAINER GoodGuide "docker@goodguide.com"
 
 # Tell Apt never to prompt
 ENV DEBIAN_FRONTEND noninteractive
 
-# this forces dpkg not to call sync() after package extraction and speeds up install
-RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup
-
-# we don't need apt cache in a container
-RUN echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
-
 RUN locale-gen en_US en_US.UTF-8 \
- && dpkg-reconfigure locales
+ && dpkg-reconfigure locales \
+ # Set apt mirror
+ && sed 's:archive.ubuntu.com/ubuntu/:mirrors.rit.edu/ubuntu-archive/:' -i /etc/apt/sources.list \
 
-RUN apt-get update \
- && apt-get install -y aptitude \
+ # never install recommends automatically
+ && echo 'Apt::Install-Recommends "false";' > /etc/apt/apt.conf.d/docker-no-recommends \
+ && echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/docker-assume-yes \
+ && echo 'APT::Get::AutomaticRemove "true";' > /etc/apt/apt.conf.d/docker-auto-remove \
+
+ # enable backports and others off by default
+ && sed 's/^#\s*deb/deb/' -i /etc/apt/sources.list \
+
+ # Enable automatic preference to use backport
+ && echo 'Package: *'                      >> /etc/apt/preferences \
+ && echo 'Pin: release a=wily-backports'   >> /etc/apt/preferences \
+ && echo 'Pin-Priority: 500'               >> /etc/apt/preferences \
+
+ && apt-get update \
+ && apt-get install \
+       aptitude \
+       apt-transport-https \
+       ca-certificates \
+       curl \
+       git \
+       iputils-ping \
+       software-properties-common \
+       vim \
  && apt-get clean
-
-RUN aptitude install --without-recommends --assume-yes \
-      build-essential \
-      ca-certificates \
-      curl \
-      git \
-      htop \
-      iputils-ping \
-      ssh-client \
-      vim \
- && aptitude clean
-
-ONBUILD RUN aptitude update
