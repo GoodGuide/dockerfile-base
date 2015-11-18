@@ -4,4 +4,4 @@ This is a Dockerfile to build a base-image with a minimum set of libraries/tools
 
 It also performs some helpful configuration for `apt`, for running with no available UI, as happens when installing packages via Dockerfile.
 
-This is tied to the [goodguide/base](//registry.hub.docker.com/u/goodguide/base) automated build on the Docker Hub.
+This is tied to the [goodguide/base](//registry.hub.docker.com/u/goodguide/base) automated build on the Docker Hub, as well as the [quay.io/goodguide/base](https://quay.io/repository/goodguide/base) build on Quay.io.
