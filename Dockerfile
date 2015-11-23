@@ -33,9 +33,14 @@ RUN set -x \
  && apt-get install \
        aptitude \
        apt-transport-https \
+       bash \
        ca-certificates \
+       coreutils \
        curl \
        git \
+       gnupg \
+       gzip \
        iputils-ping \
+       less \
        software-properties-common \
        vim
