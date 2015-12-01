@@ -30,6 +30,7 @@ RUN set -x \
  && echo 'Pin-Priority: 500'               >> /etc/apt/preferences \
 
  && apt-get update \
+ && apt-get upgrade \
  && apt-get install \
        aptitude \
        apt-transport-https \
