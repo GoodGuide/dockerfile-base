@@ -10,7 +10,11 @@ if ! git diff --quiet; then
 		git_revision="${git_revision}-dirty"
 fi
 
-docker build --file "${DOCKERFILE:-"Dockerfile.${BASE}"}" --tag "${tag}" --build-arg git_revision="${git_revision}" .
+docker build \
+			 --file "${DOCKERFILE:-"Dockerfile.${BASE}"}" \
+			 --tag "${tag}" \
+			 --build-arg git_revision="${git_revision}" \
+			 .
 
 if [[ ${TRAVIS_BUILD_NUMBER:-} ]]; then
   docker push "${tag}"
