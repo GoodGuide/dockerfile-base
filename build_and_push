@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -x -euo pipefail
+
+tag="quay.io/goodguide/base:${BASE}"
+
+git_revision="$(git rev-parse HEAD)"
+
+if ! git diff --quiet; then
+		git_revision="${git_revision}-dirty"
+fi
+
+docker build --file "${DOCKERFILE:-"Dockerfile.${BASE}"}" --tag "${tag}" --build-arg git_revision="${git_revision}" .
+
+if [[ ${TRAVIS_BUILD_NUMBER:-} ]]; then
+  docker push "${tag}"
+  docker tag "${tag}" "${tag}-${TRAVIS_BUILD_NUMBER}"
+  docker push "${tag}-${TRAVIS_BUILD_NUMBER}"
+fi
