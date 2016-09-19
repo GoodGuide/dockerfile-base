@@ -11,9 +11,10 @@ if ! git diff --quiet; then
 fi
 
 docker build \
+			 --pull \
 			 --file "${DOCKERFILE:-"Dockerfile.${BASE}"}" \
 			 --tag "${tag}" \
-			 --build-arg git_revision="${git_revision}" \
+			 --label "com.goodguide.base-image.base.git-revision=$git_revision" \
 			 .
 
 if [[ ${TRAVIS_BUILD_NUMBER:-} ]]; then

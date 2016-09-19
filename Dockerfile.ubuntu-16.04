@@ -59,6 +59,3 @@ RUN ln -sf /etc/bashrc /root/.bashrc \
  && ln -sf /etc/bashrc /app/.bashrc
 
 CMD ["/bin/bash"]
-
-ARG git_revision
-LABEL com.goodguide.base-image.base.git-revision="$git_revision"
