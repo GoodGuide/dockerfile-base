@@ -1,5 +1,5 @@
 # vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2:
-FROM alpine:3.3
+FROM {{BASE_IMAGE}}
 
 MAINTAINER GoodGuide "docker@goodguide.com"
 

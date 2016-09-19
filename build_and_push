@@ -2,6 +2,10 @@
 
 set -x -euo pipefail
 
+if [[ -z ${BASE:-} && -n ${BASE_IMAGE:-} ]]; then
+		BASE="$(echo ${BASE_IMAGE} | awk '{ gsub(/[^a-zA-Z0-9.]+/, "-"); print }' )"
+fi
+
 tag="quay.io/goodguide/base:${BASE}"
 
 git_revision="$(git rev-parse HEAD)"
@@ -10,12 +14,22 @@ if ! git diff --quiet; then
 		git_revision="${git_revision}-dirty"
 fi
 
+if [[ ${TEMPLATE:-} ]]; then
+	template_file="Dockerfile.${TEMPLATE}.tpl"
+	file="Dockerfile.${BASE}"
+	awk "{ sub(\"{{BASE_IMAGE}}\", \"${BASE_IMAGE}\"); print }" < $template_file > $file
+else
+	file="${DOCKERFILE:-"Dockerfile.${BASE}"}"
+fi
+
 docker build \
 			 --pull \
-			 --file "${DOCKERFILE:-"Dockerfile.${BASE}"}" \
+			 --file "${file}" \
 			 --tag "${tag}" \
 			 --label "com.goodguide.base-image.base.git-revision=$git_revision" \
 			 .
+
+[[ ${template_file:-} ]] && rm "${file}"
 
 if [[ ${TRAVIS_BUILD_NUMBER:-} ]]; then
   docker push "${tag}"
