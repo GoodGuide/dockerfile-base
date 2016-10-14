@@ -16,8 +16,9 @@ RUN apk add --update \
        git \
        gnupg \
        gzip \
-       less \
        iputils \
+       less \
+       tini \
        vim \
 
  # Add default app user
@@ -29,4 +30,5 @@ COPY etc/ /etc/
 RUN ln -sf /etc/bashrc /root/.bashrc \
  && ln -sf /etc/bashrc /app/.bashrc
 
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/bin/bash"]
