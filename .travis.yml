@@ -8,7 +8,6 @@ services:
 language: c
 
 env:
-  - TEMPLATE=alpine BASE_IMAGE=alpine:3.3
   - TEMPLATE=alpine BASE_IMAGE=alpine:3.4
   - BASE=ubuntu-16.04
 
