@@ -9,6 +9,7 @@ language: c
 
 env:
   - TEMPLATE=alpine BASE_IMAGE=alpine:3.4
+  - TEMPLATE=alpine BASE_IMAGE=alpine:3.5
   - BASE=ubuntu-16.04
 
 install: true
