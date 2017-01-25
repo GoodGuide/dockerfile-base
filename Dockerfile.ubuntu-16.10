@@ -1,0 +1,72 @@
+# vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2:
+FROM ubuntu:16.10
+
+MAINTAINER GoodGuide "docker@goodguide.com"
+
+# Tell Apt never to prompt
+ENV DEBIAN_FRONTEND noninteractive
+
+COPY script/default_shell.sh /usr/local/bin/default_shell
+SHELL ["/usr/local/bin/default_shell"]
+
+ARG apt_mirror="mirrors.rit.edu/ubuntu-archive/"
+RUN : \
+ # Set up UTF support
+ && locale-gen en_US en_US.UTF-8 \
+ && dpkg-reconfigure locales \
+ && update-locale LANG=en_US.UTF-8 \
+
+ # Set apt mirror
+ && sed "s:archive.ubuntu.com/ubuntu/:${apt_mirror}:" -i /etc/apt/sources.list \
+
+ # never install recommends automatically
+ && echo 'Apt::Install-Recommends "false";' > /etc/apt/apt.conf.d/docker-no-recommends \
+ && echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/docker-assume-yes \
+ && echo 'APT::Get::AutomaticRemove "true";' > /etc/apt/apt.conf.d/docker-auto-remove \
+
+ # enable backports and others off by default
+ && sed 's/^#\s*deb/deb/' -i /etc/apt/sources.list \
+
+ # Enable automatic preference to use backport
+ && echo 'Package: *'                      >> /etc/apt/preferences \
+ && echo 'Pin: release a=yakkety-backports' >> /etc/apt/preferences \
+ && echo 'Pin-Priority: 500'               >> /etc/apt/preferences \
+
+ && apt-get update \
+ && apt-get upgrade \
+ && apt-get install \
+       aptitude \
+       apt-transport-https \
+       bash \
+       ca-certificates \
+       coreutils \
+       curl \
+       git \
+       gnupg \
+       gzip \
+       iputils-ping \
+       less \
+       software-properties-common \
+       vim \
+
+ # Add default app user
+ && mkdir /app \
+ && useradd -MN -g users -d /app -c 'App runtime user' app
+
+# install tini
+RUN TINI_VERSION=v0.10.0 \
+ && curl -fsSL -o /sbin/tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini \
+ && curl -fsSL -o /sbin/tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc \
+ && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
+ && gpg --verify /sbin/tini.asc \
+ && rm /sbin/tini.asc \
+ && chmod +x /sbin/tini
+
+ENTRYPOINT ["/sbin/tini", "--"]
+
+COPY script/gg_health_docker_healthcheck.sh /usr/local/bin/gg_health_check
+COPY etc/ /etc/
+RUN ln -sf /etc/bashrc /root/.bashrc \
+ && ln -sf /etc/bashrc /app/.bashrc
+
+CMD ["/bin/bash"]
