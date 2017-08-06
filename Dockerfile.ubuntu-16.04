@@ -11,11 +11,6 @@ SHELL ["/usr/local/bin/default_shell"]
 
 ARG apt_mirror="mirrors.rit.edu/ubuntu-archive/"
 RUN : \
- # Set up UTF support
- && locale-gen en_US en_US.UTF-8 \
- && dpkg-reconfigure locales \
- && update-locale LANG=en_US.UTF-8 \
-
  # Set apt mirror
  && sed "s:archive.ubuntu.com/ubuntu/:${apt_mirror}:" -i /etc/apt/sources.list \
 
@@ -46,8 +41,14 @@ RUN : \
        gzip \
        iputils-ping \
        less \
+       locales \
        software-properties-common \
        vim \
+
+ # Set up UTF support
+ && locale-gen en_US en_US.UTF-8 \
+ && dpkg-reconfigure locales \
+ && update-locale LANG=en_US.UTF-8 \
 
  # Add default app user
  && mkdir /app \
