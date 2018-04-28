@@ -13,6 +13,7 @@ env:
   - TEMPLATE=alpine BASE_IMAGE=alpine:3.6
   - BASE=ubuntu-16.04
   - BASE=ubuntu-16.10
+  - BASE=ubuntu-18.40
 
 install: true
 
